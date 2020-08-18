@@ -13,6 +13,7 @@ def letterCombinations(digits: str) -> List[str]:
     if not digits:
         return []
 
+    # Minor optimization to use integers throughout instead of strings
     digits_int = [int(j) for j in digits]
 
     digit_map = {
@@ -30,6 +31,7 @@ def letterCombinations(digits: str) -> List[str]:
 
     for digit in digits_int:
         
+        # Constraint given by the problem to mirror an actual phone keypad
         if 2 > digit > 9:
             return []
 
