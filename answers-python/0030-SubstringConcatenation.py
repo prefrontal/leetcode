@@ -5,56 +5,57 @@
 # order, and without any intervening characters.
 # You can return the answer in any order.
 
-import itertools
+from collections import Counter
 from typing import List
 
 def findSubstring(s: str, words: List[str]) -> List[int]:
     if not s or not words:
         return []
 
-    # Generate the substring permutations
-    perms = [''.join(x) for x in itertools.permutations(words, len(words))]
-    substring_set = set(perms)
-
-    substring_step = len(words[0])
+    # Working with all permutations took too much memory, so we are doing a trick where we just
+    # need to match the frequency of the works in the input list and the substring we pull out
+    words_counter = Counter(words)
+    substring_step = len(words[0]) # All words in the list have the same length
     substring_len = substring_step * len(words)
 
     # Search for the substrings
     results = []
-    start = 0
+    idx = 0
 
-    while start < len(s)-substring_len+1:
-        for end in range(start+substring_step, len(s)+1, substring_step):
-            string = s[start:end]
-            if string in substring_set:
-                results.append(start)
+    while idx < len(s)-substring_len+1:
+        test_words = []
+        for start in range(idx, idx+substring_len, substring_step):
+            test_words.append(s[start:start+substring_step])
 
-        start += 1
+        if words_counter == Counter(test_words):
+            results.append(idx)
+
+        idx += 1
 
     return results
 
 
 # Tests
-s = ""
+test_string = ""
 words = ["foo", "bar"]
-print(findSubstring(s, words) == [])
+print(findSubstring(test_string, words) == [])
 
-s = "barfoothefoobarman"
+test_string = "barfoothefoobarman"
 words = []
-print(findSubstring(s, words) == [])
+print(findSubstring(test_string, words) == [])
 
-s = "barfoothefoobarman"
+test_string = "barfoothefoobarman"
 words = ["foo", "bar"]
-print(findSubstring(s, words) == [0,9])
+print(findSubstring(test_string, words) == [0, 9])
 
-s = "wordgoodgoodgoodbestword"
+test_string = "wordgoodgoodgoodbestword"
 words = ["word", "good", "best", "word"]
-print(findSubstring(s, words) == [])
+print(findSubstring(test_string, words) == [])
 
-s = "barfoofoobarthefoobarman"
+test_string = "barfoofoobarthefoobarman"
 words = ["bar", "foo", "the"]
-print(findSubstring(s, words) == [6,9,12])
+print(findSubstring(test_string, words) == [6, 9, 12])
 
-s = "wordgoodgoodgoodbestword"
+test_string = "wordgoodgoodgoodbestword"
 words = ["word", "good", "best", "good"]
-print(findSubstring(s, words) == [8])
+print(findSubstring(test_string, words) == [8])
