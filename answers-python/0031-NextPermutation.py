@@ -14,36 +14,40 @@ def nextPermutation(nums: List[int]) -> None:
         return
 
     # Find the lowest value we can flip to meet the criteria
+    flip_index = None
     for idx in range(len(nums)-2, -1, -1):
         if nums[idx] < nums[idx+1]:
-            min_dist = math.inf
-            swap_target = None
-            for idx2 in range(idx+1, len(nums)):
-                if nums[idx2] > nums[idx] and nums[idx2] - nums[idx] <  min_dist:
-                    min_dist = nums[idx2] - nums[idx]
-                    swap_target = idx2
-            #print("Swap target: ", swap_target)
-            temp = nums[idx]
-            nums[idx] = nums[swap_target]
-            nums[swap_target] = temp
+            flip_index = idx
+            break
 
-            while True:
-                modified = False
-                for idx3 in range(len(nums)-2, idx, -1):
-                    if nums[idx3] > nums[idx3+1]:
-                        temp = nums[idx3]
-                        nums[idx3] = nums[idx3+1]
-                        nums[idx3+1] = temp
-                        modified = True
-                
-                if not modified:
-                    break
+    # If there is no flip_index, the list is already in the lexicographically
+    # greatest permutation so reverse the entire list instead
+    if flip_index == None:
+        nums.reverse()
+        return
 
-            return
-    
-    # If we get to this point, the list is already in the lexicographically greatest permutation
-    # so flip the whole thing instead
-    nums.reverse()
+    # Find the value to swap with the lowest flip value we found
+    min_dist = math.inf
+    swap_target = None
+    for idx2 in range(flip_index+1, len(nums)):
+        if nums[idx2] > nums[flip_index] and nums[idx2] - nums[flip_index] <  min_dist:
+            min_dist = nums[idx2] - nums[flip_index]
+            swap_target = idx2
+
+    nums[flip_index], nums[swap_target] = nums[swap_target], nums[flip_index]
+
+    # Now, we need to sort the rest of the values in the list to guarantee 
+    # it is the next lexicographically greatest permutation
+    while True:
+        modified = False
+        for idx3 in range(len(nums)-2, flip_index, -1):
+            if nums[idx3] > nums[idx3+1]:
+                nums[idx3], nums[idx3+1] = nums[idx3+1], nums[idx3]
+                modified = True
+        
+        if not modified:
+            break
+
     return
 
 
